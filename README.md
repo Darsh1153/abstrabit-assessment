@@ -2,6 +2,8 @@
 
 A bookmark manager with Google sign-in, private storage (Supabase RLS), and real-time sync across tabs.
 
+**Live demo:** https://smart-bookmarks-sigma-two.vercel.app
+
 ## What you need
 
 - Node.js 20+
@@ -72,6 +74,16 @@ Open [http://localhost:3000](http://localhost:3000), sign in with Google, and us
 ## Tech stack
 
 Next.js · React · TypeScript · Tailwind CSS · Supabase (Auth, Postgres, Realtime) · Zod
+
+## Problems I ran into (and how I fixed them)
+
+### Google OAuth kept failing with `redirect_uri_mismatch`
+
+I kept adding `http://localhost:3000/auth/callback` to Google Cloud, which is the wrong mental model — Supabase handles the OAuth dance, so the redirect URI in Google has to be **Supabase’s** callback (`https://<project-ref>.supabase.co/auth/v1/callback`), not my Next.js route. My app’s `/auth/callback` only shows up in **Supabase → Redirect URLs**. Once I lined those two up, sign-in just worked.
+
+### OAuth redirect was wrong on Vercel (but fine locally)
+
+Locally, redirecting to `origin` after `exchangeCodeForSession` is enough. On Vercel, `origin` can be the deployment URL while the user actually hit the production domain. The callback route now checks `x-forwarded-host` in production and builds the redirect from that. Took one failed deploy and a confused “why am I on a preview URL?” moment to find it.
 
 ## License
 
