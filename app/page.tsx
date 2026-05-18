@@ -1,65 +1,74 @@
-import Image from "next/image";
+import { redirect } from "next/navigation";
+import { Bookmark, Search, Zap, Lock } from "lucide-react";
+import { LoginButton } from "@/components/login-button";
+import { AuthErrorToast } from "@/components/auth-error-toast";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export default function Home() {
+type PageProps = {
+  searchParams: Promise<{ auth_error?: string }>;
+};
+
+export default async function LandingPage({ searchParams }: PageProps) {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (user) redirect("/dashboard");
+
+  const params = await searchParams;
+  const authError = params.auth_error;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="flex flex-1 flex-col">
+      {authError && <AuthErrorToast message={authError} />}
+      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--primary)] text-[var(--primary-foreground)]">
+            <Bookmark className="h-4 w-4" aria-hidden />
+          </div>
+          <span className="text-sm font-semibold tracking-tight">
+            Smart Bookmarks
+          </span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </header>
+
+      <section className="mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center px-6 py-12 text-center sm:py-20">
+
+        <h1 className="mt-6 max-w-3xl text-4xl font-semibold tracking-tight text-balance sm:text-5xl md:text-6xl">
+          Save anything. Find it instantly.
+        </h1>
+        <p className="mt-5 max-w-xl text-base text-pretty text-[var(--muted-foreground)] sm:text-lg">
+          A focused bookmark manager that stays in sync. Organize with tags,
+          search the moment you start typing, and never lose a link again.
+        </p>
+
+        <div className="mt-8 flex w-full max-w-sm flex-col items-center gap-3 sm:max-w-none sm:items-center">
+          <LoginButton />
         </div>
-      </main>
+
+      </section>
+    </main>
+  );
+}
+
+function Feature({
+  icon,
+  title,
+  description,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 text-left">
+      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--muted)] text-[var(--foreground)]">
+        {icon}
+      </div>
+      <h3 className="mt-3 text-sm font-semibold">{title}</h3>
+      <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+        {description}
+      </p>
     </div>
   );
 }
