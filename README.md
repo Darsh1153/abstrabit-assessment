@@ -73,10 +73,6 @@ Open [http://localhost:3000](http://localhost:3000), sign in with Google, and us
 
 Next.js · React · TypeScript · Tailwind CSS · Supabase (Auth, Postgres, Realtime) · Zod
 
-## More detail
-
-For step-by-step verification and troubleshooting, see [HOW_TO_RUN.md](HOW_TO_RUN.md).
-
 ## License
 
 MIT
