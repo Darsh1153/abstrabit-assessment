@@ -84,7 +84,3 @@ I kept adding `http://localhost:3000/auth/callback` to Google Cloud, which is th
 ### OAuth redirect was wrong on Vercel (but fine locally)
 
 Locally, redirecting to `origin` after `exchangeCodeForSession` is enough. On Vercel, `origin` can be the deployment URL while the user actually hit the production domain. The callback route now checks `x-forwarded-host` in production and builds the redirect from that. Took one failed deploy and a confused “why am I on a preview URL?” moment to find it.
-
-## License
-
-MIT
